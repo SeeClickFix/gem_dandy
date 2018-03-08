@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+
+require "dotenv"
+require "fileutils"
+require "date"
+
+require_relative "../lib/depbot"
+
+require "pry"
+
+Dotenv.load
+
+BASE_BRANCH = ARGV[1] || "develop"
+REPO = ARGV[0]
+LOCKFILE = 'Gemfile.lock'.freeze
+
+abort("Please specify a githib repo\nUsage: bin/depbot seeclickfix/scf <basebranch>") unless REPO
+
+client = Depbot::Github.client
+git_repo = Depbot::GitRepo.new(REPO, BASE_BRANCH)
+
+git_repo.checkout_update_branch
+
+FileUtils.chdir git_repo.path do
+  system("BUNDLE_GEMFILE=#{git_repo.path}/Gemfile bundle update")
+end
+
+diff_parser = Depbot::DiffParser.new(git_repo.diff_for(LOCKFILE))
+
+abort('No updates today') if diff_parser.changes.empty?
+
+### Commit ###
+
+commit_message = "Bundle Update on #{Date.today.strftime('%Y-%m-%d')}"
+
+git_repo.commit_and_push(commit_message)
+
+### Pull Request ###
+
+# FIXME: Move out of here...
+#
+pull_request_message = "**Updated RubyGems:**\n\n"
+pull_request_message += diff_parser.changes.map do |gem|
+  "- #{gem.to_markdown}"
+end.join("\n")
+pull_request_message += Depbot::PULL_REQUEST_FOOTER
+
+pull_request = client.create_pull_request(
+  REPO, BASE_BRANCH, git_repo.update_branch,
+  commit_message, pull_request_message
+)
+
+puts "Pull Request Created: #{pull_request[:html_url]}"
