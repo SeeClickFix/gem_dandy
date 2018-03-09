@@ -2,6 +2,7 @@
 
 require "bundler/setup"
 
+require 'optparse'
 require "dotenv"
 require "fileutils"
 require "date"
@@ -12,11 +13,35 @@ require "pry"
 
 Dotenv.load
 
-BASE_BRANCH = ARGV[1] || "develop"
+options = {}
+
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: bin/depbot [options] github_org/github_repo"
+
+  opts.separator ""
+  opts.separator "Specific options:"
+
+  opts.banner = "Usage: bin/depbot <github_org>/<github_repo> [options]"
+
+  opts.on("-b BRANCH_NAME", String, "--branch", "Base branch") do |branch|
+    options[:branch] = branch
+  end
+
+  opts.on("-d", "--dry-run", "Dry run (Don't push or create a pull request") do |d|
+    options[:dry_run] = d
+  end
+end
+
+optparse.parse!
+
+BASE_BRANCH = options[:branch] || "develop"
 REPO = ARGV[0]
 LOCKFILE = 'Gemfile.lock'.freeze
 
-abort("Please specify a githib repo\nUsage: bin/depbot seeclickfix/scf <basebranch>") unless REPO
+unless REPO
+  puts optparse
+  abort
+end
 
 client = Depbot::Github.client
 git_repo = Depbot::GitRepo.new(REPO, BASE_BRANCH)
@@ -35,7 +60,9 @@ abort('No updates today') if diff_parser.changes.empty?
 
 commit_message = "Bundle Update on #{Date.today.strftime('%Y-%m-%d')}"
 
-git_repo.commit_and_push(commit_message)
+if !options[:dry_run]
+  git_repo.commit_and_push(commit_message)
+end
 
 ### Pull Request ###
 
@@ -47,9 +74,14 @@ pull_request_message += diff_parser.changes.map do |gem|
 end.join("\n")
 pull_request_message += Depbot::PULL_REQUEST_FOOTER
 
-pull_request = client.create_pull_request(
-  REPO, BASE_BRANCH, git_repo.update_branch,
-  commit_message, pull_request_message
-)
+if !options[:dry_run]
+  pull_request = client.create_pull_request(
+    REPO, BASE_BRANCH, git_repo.update_branch,
+    commit_message, pull_request_message
+  )
 
-puts "Pull Request Created: #{pull_request[:html_url]}"
+  puts "Pull Request Created: #{pull_request[:html_url]}"
+else
+  puts "Pull request would have been submitted with the following message:"
+  puts pull_request_message
+end
