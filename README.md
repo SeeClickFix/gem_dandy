@@ -12,7 +12,7 @@ It's like [deppbot](https://deppbot.com) but with one less p and it actually wor
 ## Usage
 
 ```bash
-$ bin/depbot <github_user>/<githut_repo> <branch (optional)
+$ bin/depbot <github_user>/<github_repo> <branch (optional)
 ```
 
 What is happening:
