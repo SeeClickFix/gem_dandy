@@ -1,7 +1,11 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gem "octokit"
-gem "dotenv"
-gem "git"
-gem "pry"
-gem "httparty"
+gem 'octokit'
+gem 'dotenv'
+gem 'git'
+gem 'pry'
+gem 'httparty'
+
+group :test do
+  gem 'rspec'
+end

@@ -1,3 +1,4 @@
 .env
 tmp
 .ruby-version
+spec/examples.txt
