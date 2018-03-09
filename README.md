@@ -12,12 +12,12 @@ It's like [deppbot](https://deppbot.com) but with one less p and it actually wor
 ## Usage
 
 ```bash
-$ ruby depbot.rb
+$ bin/depbot <github_user>/<githut_repo> <branch (optional)
 ```
 
 What is happening:
 
-- The `GITHUB_REPO` is cloned into `tmp`
+- The repo is cloned into `tmp`
 - A `bundle update` command is run
 - The diff is parsed to determine what, if anything changed
 - The changes are commited
