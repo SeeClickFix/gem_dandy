@@ -48,8 +48,11 @@ git_repo = Depbot::GitRepo.new(REPO, BASE_BRANCH)
 
 git_repo.checkout_update_branch
 
+gemfile_path = "#{git_repo.path}/Gemfile"
+
 FileUtils.chdir git_repo.path do
-  system("BUNDLE_GEMFILE=#{git_repo.path}/Gemfile bundle update")
+  system("bundle install --standalone --gemfile #{gemfile_path}")
+  system("BUNDLE_GEMFILE=#{gemfile_path} bundle update")
 end
 
 diff_parser = Depbot::DiffParser.new(git_repo.diff_for(LOCKFILE))
