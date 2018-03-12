@@ -4,6 +4,12 @@ RSpec.describe Depbot::DiffParser do
   subject { described_class.new(@diff) }
 
   describe '#changes' do
+    it 'currently ignores git revision changes' do
+      @diff = "+  revision: 1ea84f2ab40181616944983c4ca5e0d98670af76"
+
+      expect(subject.changes).to be_empty
+    end
+
     it 'ignores lines that are not gems' do
       @diff = "this is bogus\ndiff\nindex\n@@"
 
