@@ -18,6 +18,9 @@ module Depbot
 
         change_log = files.find { |file| file[:name][CHANGELOG_NAMES] }
         change_log && change_log[:html_url]
+      rescue Octokit::NotFound
+        # Repo just flat out doesn't exist. No CHANGELOG for you
+        return nil
       end
     end
   end
