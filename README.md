@@ -3,6 +3,8 @@ Depbot
 
 It's like [deppbot](https://deppbot.com) but with one less p and it actually works (most of the time)
 
+![depbot in action](https://media3.giphy.com/media/bzNZW2FTwsNQA/giphy.gif)
+
 ## Install & Setup
 
 1. Clone the repo to your computer.
