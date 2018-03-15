@@ -23,7 +23,7 @@ module Depbot
     attr_reader :repo, :base_branch, :update_branch, :path
 
     def url
-      @url ||= "#{Depbot::Github::GIT_URL}:#{repo}.git"
+      @url ||= Depbot::Github.clone_url(repo)
     end
 
     def checkout_update_branch
