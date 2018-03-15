@@ -5,6 +5,7 @@ gem 'dotenv'
 gem 'git'
 gem 'pry'
 gem 'httparty'
+gem 'rake'
 
 group :test do
   gem 'rspec'
