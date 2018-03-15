@@ -5,11 +5,9 @@ require 'dotenv'
 require 'fileutils'
 require 'date'
 
-require_relative '../lib/depbot'
-
-require 'pry'
-
 Dotenv.load
+
+require_relative '../lib/depbot'
 
 options = {}
 
