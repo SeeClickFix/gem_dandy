@@ -2,7 +2,7 @@ require_relative './gem_change'
 
 module Depbot
   class DiffParser
-    NAME_VERSION = /^(?<operation>[-+])\s+(?<name>[\w-]+)\s\([^\d.]*(?<version>[\d.]+)\)/
+    NAME_VERSION = /^(?<operation>[-+])\s{4}(?<name>[\w-]+)\s\([^\d.]*(?<version>[\d.]+)\)/
 
     def initialize(diff)
       @diff = diff || ''

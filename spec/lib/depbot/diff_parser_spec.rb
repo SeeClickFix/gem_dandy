@@ -17,7 +17,7 @@ RSpec.describe Depbot::DiffParser do
     end
 
     it 'includes any new gems added' do
-      @diff = '+ new_gem (0.1.0)'
+      @diff = '+    new_gem (0.1.0)'
 
       new_gem = subject.changes.first
 
@@ -27,17 +27,23 @@ RSpec.describe Depbot::DiffParser do
     end
 
     it 'only returns unique gems' do
-      @diff = "+ new_gem (0.1.0)\n+ new_gem (0.1.0)"
+      @diff = "+    new_gem (0.1.0)\n+    new_gem (0.1.0)"
 
       expect(subject.changes.count).to eq(1)
     end
 
     it 'includes the previous gem version if found' do
-      @diff = "+ new_gem (0.1.0)\n- new_gem (0.0.9)"
+      @diff = "+    new_gem (0.1.0)\n-    new_gem (0.0.9)"
 
       gem_change = subject.changes.first
 
       expect(gem_change.previous_version).to eq('0.0.9')
+    end
+
+    it 'ignores dependency changes' do
+      @diff = '+      dep_gem (0.1.0)'
+
+      expect(subject.changes).to be_empty
     end
   end
 end
