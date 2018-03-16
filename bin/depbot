@@ -49,8 +49,13 @@ git_repo.checkout_update_branch
 
 gemfile_path = "#{git_repo.path}/Gemfile"
 
-FileUtils.chdir git_repo.path do
-  system("BUNDLE_GEMFILE=#{gemfile_path} RUBYOPT='' bundle lock --update")
+Depbot::Env.temporarily_set('RUBYOPT', '') do
+  FileUtils.chdir git_repo.path do
+    Depbot::Env.temporarily_set('BUNDLE_GEMFILE', gemfile_path) do
+      system('bundle config --local frozen false')
+      system('bundle lock --update')
+    end
+  end
 end
 
 diff_parser = Depbot::DiffParser.new(git_repo.diff_for(LOCKFILE))
