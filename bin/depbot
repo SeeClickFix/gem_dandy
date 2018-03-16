@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
 
 require 'optparse'
 require 'dotenv'
@@ -32,7 +35,7 @@ optparse.parse!
 
 BASE_BRANCH = options[:branch] || 'develop'
 REPO = ARGV[0]
-LOCKFILE = 'Gemfile.lock'.freeze
+LOCKFILE = 'Gemfile.lock'
 
 unless REPO
   puts optparse
@@ -47,7 +50,7 @@ git_repo.checkout_update_branch
 gemfile_path = "#{git_repo.path}/Gemfile"
 
 FileUtils.chdir git_repo.path do
-  system("BUNDLE_GEMFILE=#{gemfile_path} bundle lock --update")
+  system("BUNDLE_GEMFILE=#{gemfile_path} RUBYOPT='' bundle lock --update")
 end
 
 diff_parser = Depbot::DiffParser.new(git_repo.diff_for(LOCKFILE))
