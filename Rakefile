@@ -53,7 +53,11 @@ task update: %I[ssh_setup github_known_hosts] do
   repos.each do |repo_name, branch|
     open_prs = Depbot::Github.client.pull_requests(repo_name, state: 'open')
 
-    next if depbot_user && open_prs.any? { |pr| pr.user.login == depbot_user }
+    if depbot_user && open_prs.any? { |pr| pr.user.login == depbot_user }
+      puts "Open PR for '#{depbot_user}' found. " \
+        "Skipping updates on '#{repo_name}' ..."
+      next
+    end
 
     system("bin/depbot #{repo_name} -b #{branch}")
   end
