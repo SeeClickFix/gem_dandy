@@ -3,6 +3,7 @@
 require 'rake'
 require 'fileutils'
 require 'ipaddr'
+require_relative 'lib/depbot/github'
 
 task :ssh_setup do
   return unless ENV['SSH_PRIVATE_KEY']
@@ -45,10 +46,15 @@ task :github_known_hosts do
 end
 
 task update: %I[ssh_setup github_known_hosts] do
+  depbot_user = ENV['DEPBOT_USER']
   repos = { 'seeclickfix/scf' => 'develop',
             'seeclickfix/depbot' => 'master' }
 
   repos.each do |repo_name, branch|
+    open_prs = Depbot::Github.client.pull_requests(repo_name, state: 'open')
+
+    next if depbot_user && open_prs.any? { |pr| pr.user.login == depbot_user }
+
     system("bin/depbot #{repo_name} -b #{branch}")
   end
 end
