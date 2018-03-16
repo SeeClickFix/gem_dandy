@@ -2,6 +2,8 @@ require 'rake'
 require 'fileutils'
 
 task :ssh_setup do
+  return unless ENV['SSH_PRIVATE_KEY']
+
   ssh_dir = File.join(ENV['HOME'], '.ssh')
   private_key_path = File.join(ssh_dir, 'id_rsa')
 
