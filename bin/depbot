@@ -60,7 +60,7 @@ end
 
 diff_parser = Depbot::DiffParser.new(git_repo.diff_for(LOCKFILE))
 
-abort('No updates today') if diff_parser.changes.empty?
+abort("No updates for '#{REPO}' today") if diff_parser.changes.empty?
 
 ### Commit ###
 
