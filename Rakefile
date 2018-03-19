@@ -8,7 +8,7 @@ require 'sentry-raven'
 require_relative 'lib/depbot/github'
 
 task :ssh_setup do
-  return unless ENV['SSH_PRIVATE_KEY']
+  abort unless ENV['SSH_PRIVATE_KEY']
 
   ssh_dir = File.join(ENV['HOME'], '.ssh')
   private_key_path = File.join(ssh_dir, 'id_rsa')
@@ -21,7 +21,7 @@ end
 # Copied from https://github.com/siassaj/heroku-buildpack-git-deploy-keys/blob/develop/bin/compile#L35
 #
 task :github_known_hosts do
-  return unless ENV['SSH_PRIVATE_KEY']
+  abort unless ENV['SSH_PRIVATE_KEY']
 
   ssh_dir = File.join(ENV['HOME'], '.ssh')
   known_hosts_path = File.join(ssh_dir, 'known_hosts')
