@@ -37,6 +37,8 @@ GEM
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
       faraday (~> 0.8, < 1.0)
+    sentry-raven (2.7.2)
+      faraday (>= 0.7.6, < 1.0)
 
 PLATFORMS
   ruby
@@ -49,6 +51,7 @@ DEPENDENCIES
   pry
   rake
   rspec
+  sentry-raven
 
 RUBY VERSION
    ruby 2.4.1p111

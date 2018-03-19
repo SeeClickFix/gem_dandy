@@ -3,6 +3,8 @@
 require 'rake'
 require 'fileutils'
 require 'ipaddr'
+require 'sentry-raven'
+
 require_relative 'lib/depbot/github'
 
 task :ssh_setup do
