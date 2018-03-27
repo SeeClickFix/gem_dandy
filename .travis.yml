@@ -1,0 +1,9 @@
+language: ruby
+rvm:
+- 2.4.1
+script: bin/rspec
+deploy:
+  provider: heroku
+  app: scf-depbot
+  api_key:
+    secure: I85cRbMVAGrblUb8z+u4Yi08GiYsNzbzKdHt4KNhBwHTmnTjk4Bu3VxWNIiTzLtDOE3F+Gc/LW1SNmU0lKbXOGdo3R6lbXj/WeXQIf4yfdyicUdq0B2Yux3B25OHrB0xzRcnea5bkS+odX6HENSIaMN4FglLlqurWAXOVJIjDf5VeXXwnlWdpAcYgNN0K7KSiMcQmSGOp5lx5SerJ3X8VHZmcp2dNEPpBNiRyptCOFy9ap1Frnog4RFC/5VXYnQhB9n3/qTQRF5osm+fp4nhdN9ony5zJOOVo4lPWXAFjXRtVI92FS9pPDiK8P/9og5tqArLKSoxb7cy4zbu1m5rTgB+zhMUredBokTD+tT/XjlvLmhhRYvtH1BHLmJg6vCHihsETSDc7FvXXpeCDlSXRfx+bAzJMzVpAghZS1ZqJVMZckDLLf3BBXV/W6L8hXdHueEkglh3o2KGvifV9QHOMApOMDm+zHyDd/8X6jpXsSxTbRvEO9oSOCbP5ye3vY4owwcJd4aRSvU9kIHQM6Km43Mu00HZ6ZZTHwwgWTK/L1IDuIgoc/k/JC5aCXcZbuRS/kkkvLoOUpplBDxo+PNu0L5fX9sKDJ6AR/l4bTJW7Eb5RdtguFAS3F0x83tb/opoH1Mf11mE156FgmFiikfgvngKmXc4xMGEz7cL6X9Hi7o=

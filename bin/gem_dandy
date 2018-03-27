@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+
+require 'optparse'
+require 'dotenv'
+require 'fileutils'
+require 'date'
+
+Dotenv.load
+
+require_relative '../lib/gem_dandy'
+
+options = {}
+
+optparse = OptionParser.new do |opts|
+  opts.banner = 'Usage: bin/gem_dandy [options] github_org/github_repo'
+
+  opts.separator ''
+  opts.separator 'Specific options:'
+
+  opts.banner = 'Usage: bin/gem_dandy <github_org>/<github_repo> [options]'
+
+  opts.on('-b BRANCH_NAME', String, '--branch', 'Base branch') do |branch|
+    options[:branch] = branch
+  end
+
+  opts.on('-d', '--dry-run', 'Dry run (Do not push or create a pull request') do |d|
+    options[:dry_run] = d
+  end
+end
+
+optparse.parse!
+
+BASE_BRANCH = options[:branch] || 'master'
+REPO = ARGV[0]
+LOCKFILE = 'Gemfile.lock'
+
+unless REPO
+  puts optparse
+  abort
+end
+
+client = GemDandy::Github.client
+git_repo = GemDandy::GitRepo.new(REPO, BASE_BRANCH)
+
+git_repo.checkout_update_branch
+
+gemfile_path = "#{git_repo.path}/Gemfile"
+
+GemDandy::Env.temporarily_set('RUBYOPT', '') do
+  FileUtils.chdir git_repo.path do
+    GemDandy::Env.temporarily_set('BUNDLE_GEMFILE', gemfile_path) do
+      system('bundle config --local frozen false')
+      system('bundle lock --update')
+    end
+  end
+end
+
+diff_parser = GemDandy::DiffParser.new(git_repo.diff_for(LOCKFILE))
+
+abort("No updates for '#{REPO}' today") if diff_parser.changes.empty?
+
+### Commit ###
+
+commit_message = "Bundle Update on #{Date.today.strftime('%Y-%m-%d')}"
+
+git_repo.commit_and_push(commit_message) unless options[:dry_run]
+
+### Pull Request ###
+
+# FIXME: Move out of here...
+#
+pull_request_message = "**Updated RubyGems:**\n\n"
+pull_request_message += diff_parser.changes.map do |gem|
+  "- #{gem.to_markdown}"
+end.join("\n")
+pull_request_message += GemDandy::PULL_REQUEST_FOOTER
+
+if options[:dry_run]
+  puts 'Pull request would have been submitted with the following message:'
+  puts pull_request_message
+else
+  pull_request = client.create_pull_request(
+    REPO, BASE_BRANCH, git_repo.update_branch,
+    commit_message, pull_request_message
+  )
+
+  puts "Pull Request Created: #{pull_request[:html_url]}"
+end
