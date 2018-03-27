@@ -10,7 +10,13 @@ require_relative './gem_dandy/env'
 
 module GemDandy
   GITHUB_URL = 'https://github.com/SeeClickFix/gem_dandy'
-  PULL_REQUEST_FOOTER = "\n\n--\n\n" \
-    "Brought to you by [gem_dandy](#{GITHUB_URL}) - Automated Gemfile Updates\n" \
-    "<sub>Feedback or Bug Reports? File a [ticket](#{GITHUB_URL}/issues).</sub>"
+  PULL_REQUEST_FOOTER = <<~HEREDOC
+
+
+    --
+
+
+    Brought to you by [gem_dandy](#{GITHUB_URL}) - Automated Gemfile Updates
+    <sub>Feedback or Bug Reports? File a [ticket](#{GITHUB_URL}/issues).</sub>
+  HEREDOC
 end
