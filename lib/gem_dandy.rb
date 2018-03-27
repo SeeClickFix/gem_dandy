@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative './gem_dandy/version'
 require_relative './gem_dandy/github'
 require_relative './gem_dandy/github/changelog'
 require_relative './gem_dandy/git_repo'
