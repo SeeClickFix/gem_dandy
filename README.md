@@ -1,11 +1,19 @@
-Gem Dandy
-=========
+GemDandy
+========
 
 [![Build Status](https://travis-ci.com/SeeClickFix/gem_dandy.svg?token=qZH3VyhDsFzTvXX96D9s&branch=master)](https://travis-ci.com/SeeClickFix/gem_dandy)
 
 > "It's a bot for your Gemfile. What could go wrong" -- @tneems
 
 ![bots making Gemfiles](https://media3.giphy.com/media/bzNZW2FTwsNQA/giphy.gif)
+
+GemDandy automates your `bundle update` workflow ensuring your project always has the latest and greatest gems
+installed. 
+
+![Pull Request](https://i.imgur.com/Hwn3KiU.png)
+
+If your Gemfile needs updates, GemDandy will submit a beautifully formated pull request and show you the changes that
+are being made, including git diffs and change logs for gems that have them!
 
 ## Install & Setup
 
