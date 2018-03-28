@@ -1,7 +1,7 @@
 GemDandy
 ========
 
-[![Build Status](https://travis-ci.com/SeeClickFix/gem_dandy.svg?token=qZH3VyhDsFzTvXX96D9s&branch=master)](https://travis-ci.com/SeeClickFix/gem_dandy)
+[![Build Status](https://travis-ci.org/SeeClickFix/gem_dandy.svg?branch=master)](https://travis-ci.org/SeeClickFix/gem_dandy)
 
 > "It's a bot for your Gemfile. What could go wrong" -- @tneems
 
