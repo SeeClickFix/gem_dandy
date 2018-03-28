@@ -6,6 +6,7 @@ ruby '2.4.1'
 
 gem 'dotenv'
 gem 'git'
+gem 'httparty'
 gem 'octokit'
 gem 'rake'
 
