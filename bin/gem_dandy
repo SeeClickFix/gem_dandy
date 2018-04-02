@@ -47,16 +47,8 @@ git_repo = GemDandy::GitRepo.new(REPO, BASE_BRANCH)
 
 git_repo.checkout_update_branch
 
-gemfile_path = "#{git_repo.path}/Gemfile"
-
-GemDandy::Env.temporarily_set('RUBYOPT', '') do
-  FileUtils.chdir git_repo.path do
-    GemDandy::Env.temporarily_set('BUNDLE_GEMFILE', gemfile_path) do
-      system('bundle config --local frozen false')
-      system('bundle lock --update')
-    end
-  end
-end
+bundler = GemDandy::Bundler.new(git_repo.path)
+bundler.update
 
 diff_parser = GemDandy::DiffParser.new(git_repo.diff_for(LOCKFILE))
 
