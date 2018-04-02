@@ -26,7 +26,7 @@ module GemDandy
     end
 
     def github_url
-      [homepage_url, source_code_url].find { |url| url && url[/github.com/] }
+      [source_code_url, homepage_url].find { |url| url && url[/github.com/] }
     end
 
     def changelog_url
