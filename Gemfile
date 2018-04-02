@@ -11,6 +11,7 @@ gem 'octokit'
 gem 'rake'
 
 group :test do
+  gem 'diffy'
   gem 'rspec'
 end
 
