@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 
 ruby '2.4.1'
 
+gem 'addressable'
 gem 'dotenv'
 gem 'git'
 gem 'httparty'
