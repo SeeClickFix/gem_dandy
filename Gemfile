@@ -13,6 +13,7 @@ gem 'rake'
 group :test do
   gem 'diffy'
   gem 'rspec'
+  gem 'webmock'
 end
 
 group :production do
