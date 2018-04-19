@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 
 ruby '2.4.1'
 
+gem 'addressable'
 gem 'dotenv'
 gem 'git'
 gem 'httparty'
@@ -13,6 +14,7 @@ gem 'rake'
 group :test do
   gem 'diffy'
   gem 'rspec'
+  gem 'webmock'
 end
 
 group :production do

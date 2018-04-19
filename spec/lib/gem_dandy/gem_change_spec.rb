@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'gem_dandy/gem_change'
+require 'webmock/rspec'
 
 RSpec.describe GemDandy::GemChange do
   let(:name) { 'gem_dandy' }
@@ -14,7 +15,30 @@ RSpec.describe GemDandy::GemChange do
 
   context 'rubygems info' do
     context 'when rubygems.org is unreachable or errors' do
-      it 'fails gracefully'
+      it 'fails gracefully', :aggregate_failures do
+        stub_request(:get, GemDandy::GemChange::RUBYGEMS_API_URL_TEMPLATE).to_timeout
+
+        expect(subject.homepage_url).to be_nil
+        expect(subject.source_code_url).to be_nil
+        expect(subject.github_url).to be_nil
+        expect(subject.changelog_url).to be_nil
+        expect(subject.compare_url).to be_nil
+      end
+    end
+
+    context 'when rubygems.org returns non-json content' do
+      it 'fails gracefully', :aggregate_failures do
+        stub_request(:get, GemDandy::GemChange::RUBYGEMS_API_URL_TEMPLATE).to_return(
+          body: 'This rubygem could not be found.',
+          headers: { "content-type"=>"application/json" }
+        )
+
+        expect(subject.homepage_url).to be_nil
+        expect(subject.source_code_url).to be_nil
+        expect(subject.github_url).to be_nil
+        expect(subject.changelog_url).to be_nil
+        expect(subject.compare_url).to be_nil
+      end
     end
 
     describe '#homepage_url' do

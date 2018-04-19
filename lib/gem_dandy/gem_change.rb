@@ -5,7 +5,7 @@ require_relative './github/changelog'
 
 module GemDandy
   class GemChange
-    RUBYGEMS_API_URL = 'https://rubygems.org/api/v1/gems'.freeze
+    RUBYGEMS_API_URL_TEMPLATE = Addressable::Template.new("https://rubygems.org/api/v1/gems/{name}.json").freeze
 
     def initialize(name, previous_version, current_version)
       @name = name
@@ -60,7 +60,11 @@ module GemDandy
     attr_reader :previous_tag, :current_tag
 
     def rubygems_info
-      @rubygems_info ||= HTTParty.get("#{RUBYGEMS_API_URL}/#{name}.json")
+      @rubygems_info ||= HTTParty.get(RUBYGEMS_API_URL_TEMPLATE.expand(name: name)).tap do |response|
+        response['anything'] # force json parsing, which may fail
+      end
+    rescue StandardError
+      @rubygems_info = Hash.new
     end
 
     def url_for(key)
