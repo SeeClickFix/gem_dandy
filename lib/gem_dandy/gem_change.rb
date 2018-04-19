@@ -61,6 +61,8 @@ module GemDandy
 
     def rubygems_info
       @rubygems_info ||= HTTParty.get("#{RUBYGEMS_API_URL}/#{name}.json")
+    rescue StandardError
+      @rubygems_info = Hash.new
     end
 
     def url_for(key)

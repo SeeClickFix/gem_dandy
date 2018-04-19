@@ -14,7 +14,15 @@ RSpec.describe GemDandy::GemChange do
 
   context 'rubygems info' do
     context 'when rubygems.org is unreachable or errors' do
-      it 'fails gracefully'
+      it 'fails gracefully', :aggregate_failures do
+        allow(HTTParty).to receive(:get).and_raise(StandardError)
+
+        expect(subject.homepage_url).to be_nil
+        expect(subject.source_code_url).to be_nil
+        expect(subject.github_url).to be_nil
+        expect(subject.changelog_url).to be_nil
+        expect(subject.compare_url).to be_nil
+      end
     end
 
     describe '#homepage_url' do
