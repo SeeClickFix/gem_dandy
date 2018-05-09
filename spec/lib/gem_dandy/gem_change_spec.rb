@@ -126,7 +126,15 @@ RSpec.describe GemDandy::GemChange do
   end
 
   describe '#changelog_url' do
-    it 'delegates to Github::Changelog.for' do
+    it 'first attempts to load the changelog from rubygems' do
+      allow(subject).to receive(:rubygems_info)
+        .and_return('changelog_uri' => changelog_url)
+
+      expect(subject.changelog_url).to eq(changelog_url)
+    end
+
+    it 'otherwise delegates to Github::Changelog.for' do
+      allow(subject).to receive(:rubygems_info).and_return({})
       allow(subject).to receive(:github_url).and_return(github_url)
       allow(GemDandy::Github::Changelog).to receive(:for)
         .and_return(changelog_url)
