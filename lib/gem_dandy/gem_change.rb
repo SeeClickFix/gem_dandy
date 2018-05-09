@@ -30,7 +30,10 @@ module GemDandy
     end
 
     def changelog_url
-      @changelog_url ||= Github::Changelog.for(github_repo, current_tag)
+      @changelog_url ||= begin
+        url_for('changelog_uri') ||
+          Github::Changelog.for(github_repo, current_tag)
+      end
     end
 
     def compare_url
