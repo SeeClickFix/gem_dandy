@@ -18,7 +18,7 @@ GEM
     multipart-post (2.0.0)
     octokit (4.10.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    public_suffix (3.0.2)
+    public_suffix (3.0.3)
     rake (12.3.1)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
