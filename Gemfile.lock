@@ -16,7 +16,7 @@ GEM
       multi_xml (>= 0.5.2)
     multi_xml (0.6.0)
     multipart-post (2.0.0)
-    octokit (4.10.0)
+    octokit (4.11.0)
       sawyer (~> 0.8.0, >= 0.5.3)
     public_suffix (3.0.3)
     rake (12.3.1)
