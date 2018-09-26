@@ -6,9 +6,20 @@ require 'ipaddr'
 require_relative '../gem_dandy/github'
 
 namespace :heroku do
-  REPOS_TO_UPDATE = Hash[ENV['REPOS_TO_UPDATE'].split(',').map { |s| s.split(':') }]
   GITHUB_USER = GemDandy::Github.client.user.login
   SSH_DIR = File.join(ENV['HOME'], '.ssh').to_s
+
+  parse_env_repos = ->(env) { Hash[env.split(',').map { |s| s.split(':') }] }
+
+  open_bundle_update_prs = lambda { |repo, user, title = 'Bundle Update'|
+    if user
+      open_prs = GemDandy::Github.client.pull_requests(repo, state: 'open')
+
+      open_prs.any? do |pr|
+        pr.user.login == GITHUB_USER && pr.title[/#{title}/]
+      end
+    end
+  }
 
   desc 'Write the SSH_PRIVATE_KEY on the remote server'
   task :write_private_key do
@@ -54,17 +65,9 @@ namespace :heroku do
 
   desc 'Update repos unless there are already open bundle update prs'
   task update: %I[write_private_key write_known_hosts] do
-    open_bundle_update_prs = ->(repo, user, title = 'Bundle Update') {
-      if user
-        open_prs = GemDandy::Github.client.pull_requests(repo, state: 'open')
+    repos = parse_env_repos.call(ENV['REPOS_TO_UPDATE'])
 
-        open_prs.any? do |pr|
-          pr.user.login == GITHUB_USER && pr.title[/#{title}/]
-        end
-      end
-    }
-
-    REPOS_TO_UPDATE.each do |repo_name, branch|
+    repos.each do |repo_name, branch|
       if open_bundle_update_prs.call(repo_name, GITHUB_USER)
         puts "Open PR for '#{GITHUB_USER}' found. " \
           "Skipping updates on '#{repo_name}' ..."
@@ -72,6 +75,20 @@ namespace :heroku do
       end
 
       system("bin/gem_dandy #{repo_name} -b #{branch}")
+    end
+  end
+
+  task update_yarn: %I[write_private_key write_known_hosts] do
+    repos = parse_env_repos.call(ENV['YARN_REPOS_TO_UPDATE'])
+
+    repos.each do |repo_name, branch|
+      if open_bundle_update_prs.call(repo_name, GITHUB_USER, 'Yarn Update')
+        puts "Open PR for '#{GITHUB_USER}' found. " \
+          "Skipping updates on '#{repo_name}' ..."
+        next
+      end
+
+      system("bin/yarn_dandy #{repo_name} -b #{branch}")
     end
   end
 end
