@@ -8,6 +8,8 @@ require_relative './gem_dandy/gem_change'
 require_relative './gem_dandy/diff_parser'
 require_relative './gem_dandy/env'
 require_relative './gem_dandy/bundler'
+require_relative './gem_dandy/yarn'
+require_relative './gem_dandy/yarn_change'
 
 module GemDandy
   GITHUB_URL = 'https://github.com/SeeClickFix/gem_dandy'

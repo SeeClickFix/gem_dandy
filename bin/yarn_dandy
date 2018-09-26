@@ -1,0 +1,124 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+
+require 'optparse'
+require 'dotenv'
+require 'fileutils'
+require 'date'
+
+require 'irb' # FIXME: Remove
+
+Dotenv.load
+
+require_relative '../lib/gem_dandy'
+
+options = {}
+
+optparse = OptionParser.new do |opts|
+  opts.banner = 'Usage: bin/yarn_dandy [options] github_org/github_repo'
+
+  opts.separator ''
+  opts.separator 'Specific options:'
+
+  opts.on('-b BRANCH_NAME', String, '--branch', 'Base branch') do |branch|
+    options[:branch] = branch
+  end
+
+  opts.on('-d', '--dry-run', 'Dry run (Do not push or create a pull request') do |d|
+    options[:dry_run] = d
+  end
+end
+
+optparse.parse!
+
+BASE_BRANCH = options[:branch] || 'master'
+REPO = ARGV[0]
+LOCKFILE = 'yarn.lock'
+
+unless REPO
+  puts optparse
+  abort
+end
+
+client = GemDandy::Github.client
+git_repo = GemDandy::GitRepo.new(REPO, BASE_BRANCH, name_prefix: 'yarn-update')
+
+git_repo.checkout_update_branch
+
+yarn = GemDandy::Yarn.new(git_repo.path)
+yarn.update
+
+if yarn.removed_packages.empty? &&
+   yarn.added_packages.empty? &&
+   yarn.changed_packages.empty?
+  abort("No updates for '#{REPO}' today")
+end
+
+### Commit ###
+
+commit_message = "Yarn Update on #{Date.today.strftime('%Y-%m-%d')}"
+
+git_repo.commit_and_push(commit_message) unless options[:dry_run]
+
+### Pull Request ###
+
+pull_request_message_sections = []
+
+if yarn.changed_packages.any?
+  pull_request_message = "**Updated packages:**\n\n"
+  pull_request_message += yarn.changed_packages.map do |package|
+    changed_packages = yarn.original_package_versions[package] ^
+                       yarn.updated_package_versions[package]
+
+    original_versions = yarn.original_package_versions[package]
+                            .select { |v| changed_packages.include?(v) }
+                            .to_a.join(', ')
+    updated_versions = yarn.updated_package_versions[package]
+                           .select { |v| changed_packages.include?(v) }
+
+    updated_versions.map do |version|
+      "- #{GemDandy::YarnChange.new(package, original_versions, version).to_markdown}"
+    end
+  end.flatten.join("\n")
+
+  pull_request_message_sections << pull_request_message
+end
+
+if yarn.added_packages.any?
+  pull_request_message = "\n\n**Added packages:**\n\n"
+  pull_request_message += yarn.added_packages.map do |package, versions|
+    versions.map do |version|
+      "- #{GemDandy::YarnChange.new(package, nil, version).to_markdown}"
+    end
+  end.flatten.join("\n")
+
+  pull_request_message_sections << pull_request_message
+end
+
+if yarn.removed_packages.any?
+  pull_request_message = "\n\n**Removed packages:**\n\n"
+  pull_request_message += yarn.removed_packages.map do |package, versions|
+    versions.map do |version|
+      "- #{GemDandy::YarnChange.new(package, version, nil).to_markdown}"
+    end
+  end.flatten.join("\n")
+
+  pull_request_message_sections << pull_request_message
+end
+
+pull_request_message = pull_request_message_sections.join("\n") +
+                       GemDandy::PULL_REQUEST_FOOTER
+
+if options[:dry_run]
+  puts 'Pull request would have been submitted with the following message:'
+  puts pull_request_message
+else
+  pull_request = client.create_pull_request(
+    REPO, BASE_BRANCH, git_repo.update_branch,
+    commit_message, pull_request_message
+  )
+
+  puts "Pull Request Created: #{pull_request[:html_url]}"
+end

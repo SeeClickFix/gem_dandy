@@ -7,10 +7,10 @@ module GemDandy
   class GitRepo
     TMP_PATH = File.expand_path(File.join(__dir__, '..', '..', 'tmp')).freeze
 
-    def initialize(repo, base_branch)
+    def initialize(repo, base_branch, name_prefix: 'bundle-update')
       @repo = repo
       @base_branch = base_branch
-      @update_branch = "bundle-update-#{Time.now.strftime('%Y-%m-%d-%H%M%S')}"
+      @update_branch = "#{name_prefix}-#{Time.now.strftime('%Y-%m-%d-%H%M%S')}"
       @path = File.join(TMP_PATH, repo)
 
       reset_remote
