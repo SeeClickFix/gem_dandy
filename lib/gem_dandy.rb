@@ -19,7 +19,7 @@ module GemDandy
     --
 
 
-    Brought to you by [gem_dandy](#{GITHUB_URL}) - Automated Gemfile Updates
+    Brought to you by [gem_dandy](#{GITHUB_URL}) - Automated Dependency Updates
     <sub>Feedback or Bug Reports? File a [ticket](#{GITHUB_URL}/issues).</sub>
   HEREDOC
 end
