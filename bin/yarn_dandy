@@ -12,6 +12,8 @@ require 'irb' # FIXME: Remove
 
 Dotenv.load
 
+require 'sentry-raven' if ENV['SENTRY_DSN']
+
 require_relative '../lib/gem_dandy'
 
 options = {}
