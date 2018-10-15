@@ -5,7 +5,7 @@ require_relative '../github'
 module GemDandy
   module Github
     module Changelog
-      CHANGELOG_NAMES = /changelog|changes|history|news|releases/i
+      CHANGELOG_NAMES = /\A(changelog|changes|history|news|releases)/i
 
       def self.for(repo, tag)
         return unless repo
