@@ -2,12 +2,11 @@
 
 require 'fileutils'
 require 'ipaddr'
+require 'dotenv/tasks'
 
 require_relative '../gem_dandy/github'
 
 namespace :heroku do
-  REPOS_TO_UPDATE = Hash[ENV['REPOS_TO_UPDATE'].split(',').map { |s| s.split(':') }]
-  GITHUB_USER = GemDandy::Github.client.user.login
   SSH_DIR = File.join(ENV['HOME'], '.ssh').to_s
 
   desc 'Write the SSH_PRIVATE_KEY on the remote server'
@@ -53,7 +52,9 @@ namespace :heroku do
   end
 
   desc 'Update repos unless there are already open bundle update prs'
-  task update: %I[write_private_key write_known_hosts] do
+  task update: %I[dotenv write_private_key write_known_hosts] do
+    REPOS_TO_UPDATE = Hash[ENV['REPOS_TO_UPDATE'].split(',').map { |s| s.split(':') }]
+    GITHUB_USER = GemDandy::Github.client.user.login
     open_bundle_update_prs = ->(repo, user, title = 'Bundle Update') {
       if user
         open_prs = GemDandy::Github.client.pull_requests(repo, state: 'open')
