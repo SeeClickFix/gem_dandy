@@ -2,8 +2,8 @@
   "name": "yarn-dandy",
   "version": "0.1.0",
   "engines": {
-    "node": "6.* || 8.* || >= 10.*",
-    "yarn": ">= 1.10.0"
+    "node": "6.* || 8.*",
+    "yarn": ">= 1.13.0"
   },
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0"
